@@ -1,5 +1,6 @@
 package com.reactivo.springboot.reactor.app;
 
+import com.reactivo.springboot.reactor.app.models.Usuario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -20,13 +21,15 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		Flux<String> nombres = Flux.just("Juan", "Sonia", "Sofi", "Pablo")
-				.doOnNext(e -> {
-					if (e.isEmpty()) {
+				.map(nombre -> new Usuario(nombre.toUpperCase(), null))
+				.doOnNext(usuario -> {
+					if (usuario == null) {
 						throw new RuntimeException("Nombres no pueden estar vacíos");
 					} else {
-						System.out.println();
+						System.out.println(usuario);
 					}
-				});
+				})
+				.map(usuario -> usuario.getNombre().toLowerCase());
 
 		nombres.subscribe(
 				LOG::info,
